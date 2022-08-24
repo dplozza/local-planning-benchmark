@@ -1,0 +1,97 @@
+<launch>
+
+  <!--  ************** Global Parameters ***************  -->
+  <param name="/use_sim_time" value="true"/>
+  <arg name="gui" default="true"/>
+
+  <arg name="holotest" default="1"/>
+  <arg name="fake_localization" default="1"/>
+
+  <!-- Initial pose -->
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="1.5708"/>
+
+  <!-- Filename -->
+  <arg name="log_filename" default="$(find move_base_test)/launch/log.txt" />
+  <arg name="map_filename" default="$(find move_base_test)/maps/shopping_mall/map.yaml" />
+  <arg name="world_filename" default="$(find gazebo_world)/world/shopping_mall.world" />
+  <arg name="global_frame" value="map" />
+
+  <!--  ************** Navigation ***************  -->
+  <node pkg="move_base_test" type="move_base_benchmark" respawn="false" name="move_base_benchmark" output="screen">
+    <rosparam file="$(find move_base_test)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find move_base_test)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find move_base_test)/params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find move_base_test)/params/local_costmap_params.yaml" command="load" />
+    <param name="global_costmap/global_frame" value="$(arg global_frame)" />
+    <param name="local_costmap/global_frame" value="$(arg global_frame)" />
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="1.0" />
+    <param name="planner_patience" value="5.0" />
+
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <rosparam file="$(find move_base_test)/params/teb_local_planner_params.yaml" command="load" />
+    <param name="controller_frequency" value="5.0" />
+    <param name="controller_patience" value="15.0" />
+
+    <param name="log_filename" value="$(arg log_filename)" />
+
+
+    <remap from="cmd_vel" to="RosAria/cmd_vel" if="$(eval arg('holotest') ==0)"/>
+    <remap from="odom" to="RosAria/odom" if="$(eval arg('holotest') ==0)"/>
+
+  </node>
+
+  <!--  ****** Maps *****  -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_filename)" output="screen">
+    <param name="frame_id" value="$(arg global_frame)"/>
+  </node>
+
+  <!--  ****** Localization *****  -->
+  <group if="$(eval arg('fake_localization') ==1)">
+    <node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" >
+      <param name="global_frame_id" value="$(arg global_frame)" />
+    </node>
+  </group>
+
+  <!--  ****** Start Gazebo and launch world model *****  -->
+  <include file="$(find gazebo_world)/launch/world_launch.launch">
+    <arg name="world_name" value="$(arg world_filename)"/>
+    <arg name="gui" value="$(arg gui)" />
+  </include>
+
+  <!-- Spawn p3dx mobile robot -->
+  <group if="$(eval arg('holotest') ==0)">
+    <include file="$(find p3dx_gazebo)/launch/spawn_p3dx.launch">
+      <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+      <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+      <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
+    </include>
+  </group>
+
+  <group if="$(eval arg('holotest') ==1)">
+    <!-- Spawn holotest  robot -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find holotest_description)/urdf/holotest.urdf.xacro" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf 
+        -model /
+        -unpause
+        -x $(arg initial_pose_x) -y $(arg initial_pose_y) -z 0 
+        -param robot_description" />
+
+    <!-- repub odom, with covariance matrix to 0 -->
+    <node name="odom_repub" pkg="holotest_description" type="odom_repub.py"/>
+
+    <!-- <broadcast tf -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value=""/>
+    </node>
+  </group>
+
+
+  <!--  **************** Visualisation ****************  -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find move_base_test)/launch/rviz_navigation.rviz"/>
+
+</launch>
