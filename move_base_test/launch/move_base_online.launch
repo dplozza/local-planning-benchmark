@@ -1,0 +1,48 @@
+<launch>
+
+  <!--  ************** Global Parameters ***************  -->
+  <arg name="gui" default="true"/>
+
+  <arg name="holotest" default="1"/>
+  <arg name="fake_localization" default="1"/>
+  <arg name="scan_filt" default="1"/>
+
+   <!-- Filename -->
+  <arg name="log_filename" default="$(find move_base_test)/launch/log.txt" />
+  <arg name="map_filename" default="$(find move_base_test)/maps/shopping_mall/map.yaml" />
+  <arg name="world_filename" default="$(find gazebo_world)/world/shopping_mall.world" />
+  <arg name="global_frame" value="map" />
+
+  
+  <!--  ************** Navigation ***************  -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find move_base_test)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find move_base_test)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find move_base_test)/params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find move_base_test)/params/local_costmap_params.yaml" command="load" />
+    <param name="global_costmap/global_frame" value="$(arg global_frame)" />
+    <param name="local_costmap/global_frame" value="$(arg global_frame)" />
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="1.0" />
+    <param name="planner_patience" value="5.0" />
+
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <rosparam file="$(find move_base_test)/params/teb_local_planner_params.yaml" command="load" />
+    <param name="controller_frequency" value="5.0" />
+    <param name="controller_patience" value="15.0" />
+
+    <!-- <param name="log_filename" value="$(arg log_filename)" /> -->
+
+    <remap from="scan" to="scan_filt" if="$(eval arg('scan_filt') ==1)"/>
+
+
+    <remap from="cmd_vel" to="RosAria/cmd_vel" if="$(eval arg('holotest') ==0)"/>
+    <remap from="odom" to="RosAria/odom" if="$(eval arg('holotest') ==0)"/>
+
+  </node>
+
+  <!--  **************** Visualisation ****************  -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find move_base_test)/launch/rviz_navigation_vanilla.rviz"/>
+
+</launch>

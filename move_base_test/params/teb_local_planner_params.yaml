@@ -17,10 +17,10 @@ TebLocalPlannerROS:
   publish_feedback: False
 
   # Robot
-  max_vel_x: 0.55 # m/s
+  max_vel_x: 0.70 # m/s
   max_vel_x_backwards: 0.2 # m/s
-  max_vel_y: 0.55
-  max_vel_theta: 0.3 # rad/s
+  max_vel_y: 0.20
+  max_vel_theta: 2.0 # rad/s
   acc_lim_x: 0.3 # m/s^2
   acc_lim_y: 0.3 # m/s^2
   acc_lim_theta: 0.5 # rad/s^2
@@ -60,7 +60,7 @@ TebLocalPlannerROS:
   weight_max_vel_theta: 1
   weight_acc_lim_x: 1
   weight_acc_lim_theta: 1
-  weight_kinematics_nh: 1 #1000
+  weight_kinematics_nh: 10 #1000
   weight_kinematics_forward_drive: 1
   weight_kinematics_turning_radius: 1
   weight_optimaltime: 1 # must be > 0
