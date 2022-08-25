@@ -2,6 +2,7 @@
 
   <!--  ************** Global Parameters ***************  -->
   <arg name="gui" default="true"/>
+  <arg name="rviz" default="false"/>
 
   <arg name="local_planner" default="teb"/>
 
@@ -48,6 +49,6 @@
   </node>
 
   <!--  **************** Visualisation ****************  -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find move_base_test)/launch/rviz_navigation_vanilla.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find move_base_test)/launch/rviz_navigation_vanilla.rviz" if="$(eval arg('rviz') ==1)"/>
 
 </launch>
