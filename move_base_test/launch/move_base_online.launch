@@ -3,6 +3,8 @@
   <!--  ************** Global Parameters ***************  -->
   <arg name="gui" default="true"/>
 
+  <arg name="local_planner" default="teb"/>
+
   <arg name="holotest" default="1"/>
   <arg name="fake_localization" default="1"/>
   <arg name="scan_filt" default="1"/>
@@ -27,8 +29,11 @@
     <param name="planner_frequency" value="1.0" />
     <param name="planner_patience" value="5.0" />
 
-    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
-    <rosparam file="$(find move_base_test)/params/teb_local_planner_params.yaml" command="load" />
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" if="$(eval arg('local_planner') == 'teb')"/>
+    <rosparam file="$(find move_base_test)/params/teb_local_planner_params.yaml" command="load" if="$(eval arg('local_planner') == 'teb')"/>
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" if="$(eval arg('local_planner') == 'dwa')"/>
+    <rosparam file="$(find move_base_test)/params/dwa_local_planner_params.yaml" command="load" if="$(eval arg('local_planner') == 'dwa')"/>
+
     <param name="controller_frequency" value="5.0" />
     <param name="controller_patience" value="15.0" />
 
