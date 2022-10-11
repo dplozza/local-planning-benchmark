@@ -17,10 +17,10 @@ TebLocalPlannerROS:
   publish_feedback: False
 
   # Robot
-  max_vel_x: 0.70 # m/s
+  max_vel_x: 1.0 #max 1.5 #0.70 # m/s
   max_vel_x_backwards: 0.2 # m/s
   max_vel_y: 0.20
-  max_vel_theta: 2.0 # rad/s
+  max_vel_theta: 2.0 #2.0 # rad/s
   acc_lim_x: 0.3 # m/s^2
   acc_lim_y: 0.3 # m/s^2
   acc_lim_theta: 0.5 # rad/s^2
