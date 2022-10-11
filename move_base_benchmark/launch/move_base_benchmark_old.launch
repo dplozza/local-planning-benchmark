@@ -28,11 +28,11 @@
     <param name="planner_frequency" value="1.0" />
     <param name="planner_patience" value="5.0" />
 
-    <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
-    <rosparam file="$(find move_base_benchmark)/params/teb_local_planner_params.yaml" command="load" /> -->
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <rosparam file="$(find move_base_benchmark)/params/teb_local_planner_params.yaml" command="load" />
 
-    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-    <rosparam file="$(find move_base_benchmark)/params/dwa_local_planner_params.yaml" command="load" />
+    <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <rosparam file="$(find move_base_benchmark)/params/dwa_local_planner_params.yaml" command="load" /> -->
     <param name="controller_frequency" value="5.0" />
     <param name="controller_patience" value="15.0" />
 
@@ -47,13 +47,9 @@
   </node>
 
   <!--  ****** Localization *****  -->
-  <!-- <node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" >
+  <node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" >
     <param name="global_frame_id" value="$(arg global_frame)" />
-  </node> -->
-  <include file="$(find move_base_benchmark)/launch/amcl.launch">
-    <arg name="base_frame_id" value="base_link" />
-  </include>
-
+  </node>
 
   <!--  ****** Start Gazebo and launch world model *****  -->
   <include file="$(find gazebo_world)/launch/world_launch.launch">

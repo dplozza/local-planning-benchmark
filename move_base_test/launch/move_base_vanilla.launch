@@ -1,4 +1,5 @@
 <launch>
+  <!-- Uses vanilla navstack move_base instead of custom move_base_benchmark -->
 
   <!--  ************** Global Parameters ***************  -->
   <param name="/use_sim_time" value="true"/>

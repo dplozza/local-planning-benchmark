@@ -79,7 +79,8 @@
         -model /
         -unpause
         -x $(arg initial_pose_x) -y $(arg initial_pose_y) -z 0 
-        -param robot_description" />
+        -param robot_description" >
+      </node>
 
     <!-- repub odom, with covariance matrix to 0 -->
     <node name="odom_repub" pkg="holotest_description" type="odom_repub.py"/>
